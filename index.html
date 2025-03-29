@@ -12,7 +12,6 @@
 
     <!-- CryptoJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-
 </head>
 
 <body>
@@ -20,12 +19,13 @@
     <div id="result">Chargement...</div>
 
     <script>
+        // --- CONFIGURATION FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyA4fkmfRxjuNEXWbOMOlBsIq2N6lZnd4ps",
             authDomain: "verif-clients-f5915.firebaseapp.com",
             databaseURL: "https://verif-clients-f5915-default-rtdb.firebaseio.com",
             projectId: "verif-clients-f5915",
-            storageBucket: "verif-clients-f5915.firebasestorage.app",
+            storageBucket: "verif-clients-f5915.appspot.com",
             messagingSenderId: "914666601909",
             appId: "1:914666601909:web:286ad5057da0ac0ea46dfc"
         };
@@ -33,30 +33,22 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get("token");
-
-        console.log("Token reçu :", token);
+        // --- DECRYPTION ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        console.log("Token reçu dans l'URL :", token);
 
         if (!token) {
-            document.getElementById('result').innerHTML = "Aucun token reçu";
+            document.getElementById('result').innerHTML = "Aucun token dans l'URL.";
         } else {
-            // Utilisation de la clé fixe
-            const cleAES = "vGX8!jkd72p$";
-            console.log("Clé utilisée :", cleAES);
+            const cleAES = "vGX8!jkd72p$"; // ta clé
+            const decrypted = CryptoJS.AES.decrypt(token, cleAES).toString(CryptoJS.enc.Utf8);
+            console.log("Déchiffré :", decrypted);
 
-            try {
-                const decrypted = CryptoJS.AES.decrypt(token, cleAES).toString(CryptoJS.enc.Utf8);
-                console.log("Déchiffré :", decrypted);
-
-                if (decrypted === "") {
-                    document.getElementById('result').innerHTML = "Déchiffrement vide ou incorrect";
-                } else {
-                    document.getElementById('result').innerHTML = "Prénom : <b>" + decrypted + "</b>";
-                }
-            } catch (e) {
-                console.error("Erreur de déchiffrement :", e);
-                document.getElementById('result').innerHTML = "Erreur lors du déchiffrement";
+            if (decrypted) {
+                document.getElementById('result').innerHTML = "Prénom déchiffré : <b>" + decrypted + "</b>";
+            } else {
+                document.getElementById('result').innerHTML = "Déchiffrement vide ou incorrect.";
             }
         }
     </script>
