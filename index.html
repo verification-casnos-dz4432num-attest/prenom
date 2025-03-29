@@ -12,6 +12,7 @@
 
     <!-- CryptoJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 </head>
 
 <body>
@@ -19,7 +20,7 @@
     <div id="result">Chargement...</div>
 
     <script>
-        // --- CONFIGURATION FIREBASE ---
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyA4fkmfRxjuNEXWbOMOlBsIq2N6lZnd4ps",
             authDomain: "verif-clients-f5915.firebaseapp.com",
@@ -33,22 +34,28 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- DECRYPTION ---
+        const cleAES = "vGX8!jkd72p$"; // clé exacte
+
+        // Récupérer le token de l'URL
         const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        console.log("Token reçu dans l'URL :", token);
+        const token = urlParams.get("token");
+
+        console.log("Token récupéré : " + token);
 
         if (!token) {
-            document.getElementById('result').innerHTML = "Aucun token dans l'URL.";
+            document.getElementById('result').innerHTML = "Aucun token fourni.";
         } else {
-            const cleAES = "vGX8!jkd72p$"; // ta clé
-            const decrypted = CryptoJS.AES.decrypt(token, cleAES).toString(CryptoJS.enc.Utf8);
-            console.log("Déchiffré :", decrypted);
-
-            if (decrypted) {
-                document.getElementById('result').innerHTML = "Prénom déchiffré : <b>" + decrypted + "</b>";
-            } else {
-                document.getElementById('result').innerHTML = "Déchiffrement vide ou incorrect.";
+            try {
+                const decrypted = CryptoJS.AES.decrypt(token, cleAES).toString(CryptoJS.enc.Utf8);
+                console.log("Résultat du déchiffrement : " + decrypted);
+                if (decrypted) {
+                    document.getElementById('result').innerHTML = "Prénom : <b>" + decrypted.toUpperCase() + "</b>";
+                } else {
+                    document.getElementById('result').innerHTML = "Déchiffrement vide ou incorrect.";
+                }
+            } catch (e) {
+                console.error("Erreur lors du déchiffrement :", e);
+                document.getElementById('result').innerHTML = "Erreur lors du déchiffrement.";
             }
         }
     </script>
