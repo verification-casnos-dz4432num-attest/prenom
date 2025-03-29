@@ -20,6 +20,9 @@
     <div id="result">Chargement...</div>
 
     <script>
+        // ----------------------
+        // Initialisation Firebase
+        // ----------------------
         const firebaseConfig = {
             apiKey: "AIzaSyA4fkmfRxjuNEXWbOMOlBsIq2N6lZnd4ps",
             authDomain: "verif-clients-f5915.firebaseapp.com",
@@ -30,13 +33,26 @@
             appId: "1:914666601909:web:286ad5057da0ac0ea46dfc"
         };
 
+        console.log("Début de l'initialisation Firebase...");
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        console.log("Firebase initialisé.");
 
-        // Ici on va bientôt ajouter le déchiffrement AES + vérification blacklist
+        // ----------------------
+        // Lecture des paramètres
+        // ----------------------
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('prenom');
+        console.log("Paramètre reçu:", token);
+
+        if (!token) {
+            document.getElementById('result').innerHTML = "Erreur : aucun paramètre 'prenom' reçu.";
+            console.log("Erreur : aucun paramètre 'prenom' reçu.");
+        } else {
+            document.getElementById('result').innerHTML = "Paramètre reçu : " + token;
+            console.log("Paramètre valide détecté.");
+        }
     </script>
 </body>
 
 </html>
-
-
